@@ -9,13 +9,15 @@
 //                                  }
 //                         })
 
+
+// ******************************  API KEY STATUS MODAL *********************************
 const API_KEY = 'a2thztk_4Zo4MdDUej76d_-QQDg';
 const API_URL = 'https://ci-jshint.herokuapp.com/api';
 const resultsModal = new bootstrap.Modal(document.getElementById('resultsModal'));
 
 document.getElementById('status').addEventListener('click', e => getStatus(e));
 
-async function getStatus(e){
+async function getStatus(e) {
     const queryString = `${API_URL}?api_key=${API_KEY}`;
 
     const response = await fetch(queryString);
@@ -29,7 +31,7 @@ async function getStatus(e){
     }
 }
 
-function displayStatus(data){
+function displayStatus(data) {
     let title = 'API KEY STATUS';                           // firstly set the heading text to 'API KEY STATUS'
     let results = `<div>Your key is valid until :</div>`;   // secondly set the reults variable to the content we want 
     results += `<div class="key-status">${data.expiry}</div>`;  //   using template literals
@@ -39,4 +41,45 @@ function displayStatus(data){
 
 
     resultsModal.show();     // display the modal
+};
+
+// ******************************  Run checks *********************************
+
+document.getElementById('submit').addEventListener('click', e => postForm(e));
+
+async function postForm(e) {
+    const form = new FormData(document.getElementById('checksform'));
+    const response = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+            "Authorization": API_KEY,
+        },
+        body: form,
+    })
+    const data = await response.json();
+
+    if (response.ok) {
+        displayErrors(data);
+    } else {
+        throw new Error(data.error);
+    }
+}
+
+function displayErrors(data){
+    let heading = `JS HINT results for ${data.file}`;
+
+    if (data.total_errors === 0){
+        results = `<div class="no_errors">No errors reported!</div>`;
+    } else {
+        results = `<div>Total errors:<span class="error_count">${data.total_errors}</span></div>`;
+        for(let error of data.error_list){
+            results += `<div>At line<span class="line">${error.line}</span>,`
+            results += `column <span class="column">${error.col}</div>`
+            results += `<div class="error">${error.error}</div>`;
+        }
+    }   
+
+    document.getElementById('resultsModalTitle').innerText = heading;    
+    document.getElementById('results-content').innerHTML = results;
+    resultsModal.show();    
 }
