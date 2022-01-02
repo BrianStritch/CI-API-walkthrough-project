@@ -1,0 +1,42 @@
+//                   a2thztk_4Zo4MdDUej76d_-QQDg   // my API KEY
+
+//           https://ci-jshint.herokuapp.com/api?api_key=a2thztk_4Zo4MdDUej76d_-QQDg
+
+// const response = fetch("https://ci-jshint.herokuapp.com/api", {
+//                         method: "POST",
+//                         headers: {
+//                                     "Authorization": API_KEY,
+//                                  }
+//                         })
+
+const API_KEY = 'a2thztk_4Zo4MdDUej76d_-QQDg';
+const API_URL = 'https://ci-jshint.herokuapp.com/api';
+const resultsModal = new bootstrap.Modal(document.getElementById('resultsModal'));
+
+document.getElementById('status').addEventListener('click', e => getStatus(e));
+
+async function getStatus(e){
+    const queryString = `${API_URL}?api_key=${API_KEY}`;
+
+    const response = await fetch(queryString);
+
+    const data = await response.json();
+
+    if (response.ok) {
+        displayStatus(data);
+    } else {
+        throw new Error(data.error);
+    }
+}
+
+function displayStatus(data){
+    let title = 'API KEY STATUS';                           // firstly set the heading text to 'API KEY STATUS'
+    let results = `<div>Your key is valid until :</div>`;   // secondly set the reults variable to the content we want 
+    results += `<div class="key-status">${data.expiry}</div>`;  //   using template literals
+
+    document.getElementById('resultsModalTitle').innerText = title;    // thirdly  set the content of the two of these elements
+    document.getElementById('results-content').innerHTML = results;
+
+
+    resultsModal.show();     // display the modal
+}
