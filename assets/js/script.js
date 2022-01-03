@@ -9,7 +9,7 @@
 //                                  }
 //                         })
 
-
+// sample URL FOR TESTING https://mattrudge.net/assets/js/menu.js
 // ******************************  API KEY STATUS MODAL *********************************
 const API_KEY = 'a2thztk_4Zo4MdDUej76d_-QQDg';
 const API_URL = 'https://ci-jshint.herokuapp.com/api';
@@ -47,8 +47,26 @@ function displayStatus(data) {
 
 document.getElementById('submit').addEventListener('click', e => postForm(e));
 
+function processOptions(form){
+
+    let optArray = [];
+
+    for(let entry of form.entries()){
+        if(entry[0] === 'options'){
+            optArray.push(entry[1]);
+        }
+    };
+    form.delete('options');
+
+    form.append('options', optArray.join());
+
+    return(form);
+
+}
+
 async function postForm(e) {
-    const form = new FormData(document.getElementById('checksform'));
+    const form = processOptions(new FormData(document.getElementById('checksform')));
+
     const response = await fetch(API_URL, {
         method: "POST",
         headers: {
