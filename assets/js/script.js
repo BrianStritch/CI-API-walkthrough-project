@@ -27,6 +27,7 @@ async function getStatus(e) {
     if (response.ok) {
         displayStatus(data);
     } else {
+        displayExceptions(data);
         throw new Error(data.error);
     }
 }
@@ -64,6 +65,18 @@ function processOptions(form){
 
 }
 
+function displayExceptions(data){
+
+    let errorModalHeading = `An Exception Occurred`                         
+    let errorResults = `<div>The API returned status code ${data.status_code}</div>`;  
+    errorResults += `<div>Error number: <strong>${data.error_no}</strong></div>`;   
+    errorResults += `<div class="key-status">Error text: <strong>${data.error}</strong></div>`;      
+
+    document.getElementById('resultsModalTitle').innerText = errorModalHeading;    
+    document.getElementById('results-content').innerHTML = errorResults;    
+    resultsModal.show();     
+}
+
 async function postForm(e) {
     const form = processOptions(new FormData(document.getElementById('checksform')));
 
@@ -78,8 +91,11 @@ async function postForm(e) {
 
     if (response.ok) {
         displayErrors(data);
+        
     } else {
+        displayExceptions(data);
         throw new Error(data.error);
+        
     }
 }
 
